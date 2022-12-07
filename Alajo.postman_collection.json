@@ -1,0 +1,235 @@
+{
+	"info": {
+		"_postman_id": "d36b6d96-9f62-4c42-b006-38b0dbb8a702",
+		"name": "Alajo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3095335"
+	},
+	"item": [
+		{
+			"name": "app",
+			"item": [
+				{
+					"name": "whoami",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJ1c2luZXNzQGFsYWpvLmFwcCIsImV4cCI6MTY3MDQwNTkzMH0.ZZpeHkztCYw8ZYEti54lCQvOuS_rjSr4asF8KLMlyow",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:5000/app/whoami",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"app",
+								"whoami"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/app/customers",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"app",
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customers Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/app/transactions",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"app",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "customer by ban",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/app/customer_by_ban/20020001",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"app",
+								"customer_by_ban",
+								"20020001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "transactions by ban",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/app/transactions_by_ban/20020004",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"app",
+								"transactions_by_ban",
+								"20020004"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJ1c2luZXNzQGFsYWpvLmFwcCIsImV4cCI6MTY3MDQyNTg3Mn0.ume-rL_hshlK-iubHnyLQyX4yqvROeKqRLZdSCeu80g",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"business@alajo.app\",\n    \"password\":\"pass1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"business2@alajo.app\",\n    \"password\":\"pass1234\",\n    \"business_name\":\"Ademike\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/auth/register",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "setup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/setup",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"setup"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
