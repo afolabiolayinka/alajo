@@ -43,20 +43,6 @@ class User(db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password, password)
 
-    def generate_auth_token(self, expires_in=600):
-        return jwt.encode(
-            {'id': self.id, 'exp': time.time() + expires_in},
-            app.config['SECRET_KEY'], algorithm='HS256')
-
-    @staticmethod
-    def verify_auth_token(token):
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'],
-                              algorithm=['HS256'])
-        except:
-            return
-        return User.query.get(data['id'])
-
 
 class Customer(db.Model):
     __tablename__ = 'customers'
@@ -99,7 +85,7 @@ class Transaction(db.Model):
             'transaction_no': self.transaction_no,
             'effect': self.effect,
             'amount': self.amount,
-            'created':self.created,
+            'created': self.created,
         }
 
 
@@ -111,40 +97,39 @@ def setup():
     db.session.execute(
         '''
         CREATE TABLE users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,  
-  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  email TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL,
-  business_name TEXT NOT NULL
-);
-'''
+        id INTEGER PRIMARY KEY AUTOINCREMENT,  
+        created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        business_name TEXT NOT NULL
+        );
+        '''
     )
     db.session.execute(
         '''
-CREATE TABLE customers (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,  
-  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  code TEXT UNIQUE NOT NULL,  
-  first_name TEXT NOT NULL,
-  last_name TEXT NOT NULL,
-  ban TEXT NOT NULL,
-  balance NUMERIC NOT NULL
-);
-
-'''
+        CREATE TABLE customers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,  
+        created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        code TEXT UNIQUE NOT NULL,  
+        first_name TEXT NOT NULL,
+        last_name TEXT NOT NULL,
+        ban TEXT NOT NULL,
+        balance NUMERIC NOT NULL
+        );
+        '''
     )
     db.session.execute(
         '''
-CREATE TABLE transactions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  customer_id INTEGER NOT NULL,
-  transaction_no TEXT UNIQUE NOT NULL,  
-  effect INTEGER NOT NULL,
-  amount NUMERIC NOT NULL,
-  FOREIGN KEY (customer_id) REFERENCES customers (id)
-);
-'''
+        CREATE TABLE transactions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        customer_id INTEGER NOT NULL,
+        transaction_no TEXT UNIQUE NOT NULL,  
+        effect INTEGER NOT NULL,
+        amount NUMERIC NOT NULL,
+        FOREIGN KEY (customer_id) REFERENCES customers (id)
+        );
+        '''
     )
 
     user = User()
@@ -223,7 +208,7 @@ CREATE TABLE transactions (
 
 
 # decorator for verifying the JWT
-def token_required(f):
+def token_requiredx(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
@@ -238,7 +223,6 @@ def token_required(f):
         try:
             data = jwt.decode(
                 token, app.config["SECRET_KEY"], algorithms=["HS256"])
-
             current_user = User.query.filter_by(email=data['email']).first()
 
             if current_user is None:
@@ -257,8 +241,31 @@ def token_required(f):
             }, 500
 
         return f(current_user, *args, **kwargs)
-
     return decorated
+
+def token_required(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+
+        token = None
+
+        token = request.headers["Authorization"].split(" ")[1]
+
+        if not token:
+            return jsonify({'message': 'a valid token is missing'})
+        
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            current_user = User.query.filter_by(email=data['email']).first()
+        except Exception as e:
+            return {
+                "message": "Something went wrong",
+                "data": None,
+                "error": str(e)
+            }, 500
+
+        return f(current_user, *args, **kwargs)
+    return decorator
 
 
 @auth.verify_password
@@ -305,7 +312,7 @@ def login():
     if not user:
         return (jsonify({'message': 'Email address not found'}), 400)
 
-    if not check_password_hash(user.password,password):
+    if not check_password_hash(user.password, password):
         return (jsonify({'message': 'Password do not match'}), 400)
 
     # generates the JWT Token
@@ -319,32 +326,37 @@ def login():
 
 @app.route('/app/whoami', methods=['GET'])
 @token_required
-def whoami():
-    return jsonify({'message': 'It is done {}'.format(g.user.username)})
+def whoami(current_user):
+    return jsonify({'message': 'It is done {}'.format(current_user.email)})
 
 
 @app.route("/app/users", methods=["GET"])
-def get_users():
+@token_required
+def get_users(current_user):
     users = User.query.all()
     return jsonify([user.to_json() for user in users])
 
 
 @app.route("/app/customers", methods=["GET"])
-def get_customers():
+@token_required
+def get_customers(current_user):
     customers = Customer.query.all()
     return jsonify([customer.to_json() for customer in customers])
 
+
 @app.route("/app/customer_by_ban/<string:ban>", methods=["GET"])
-def get_customers_by_ban(ban):
+@token_required
+def get_customers_by_ban(current_user,ban):
     customer = Customer.query.filter_by(ban=ban).first()
-    return jsonify({'customer':customer.to_json()},200)
+    return jsonify({'customer': customer.to_json()}, 200)
+
 
 @app.route("/app/transactions_by_ban/<string:ban>", methods=["GET"])
-def get_transactions_by_ban(ban):
+@token_required
+def get_transactions_by_ban(current_user,ban):
     customer = Customer.query.filter_by(ban=ban).first()
     transactions = Transaction.query.filter_by(customer_id=customer.id)
     return jsonify([transaction.to_json() for transaction in transactions])
-
 
 
 if __name__ == "__main__":
