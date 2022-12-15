@@ -18,7 +18,7 @@ The endpoints postman is this repo.
 ### Docker
 
 ```
-$ docker build --tag alajo .
+$ sudo docker image build -t alajo .
 ```
 ```
 sudo docker run -d -p 5000:5000 alajo
