@@ -208,41 +208,6 @@ def setup():
 
 
 # decorator for verifying the JWT
-def token_requiredx(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        if "Authorization" in request.headers:
-            token = request.headers["Authorization"].split(" ")[1]
-        if not token:
-            return {
-                "message": "Authentication Token is missing!",
-                "data": None,
-                "error": "Unauthorized"
-            }, 401
-        try:
-            data = jwt.decode(
-                token, app.config["SECRET_KEY"], algorithms=["HS256"])
-            current_user = User.query.filter_by(email=data['email']).first()
-
-            if current_user is None:
-                return {
-                    "message": "Invalid Authentication token!",
-                    "data": None,
-                    "error": "Unauthorized"
-                }, 401
-            if not current_user["active"]:
-                abort(403)
-        except Exception as e:
-            return {
-                "message": "Something went wrong",
-                "data": None,
-                "error": str(e)
-            }, 500
-
-        return f(current_user, *args, **kwargs)
-    return decorated
-
 def token_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
