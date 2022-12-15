@@ -6,7 +6,7 @@
 $ . venv/bin/activate
 ```
 ```
-$ flask --app flaskr --debug run
+$ flask --app main --debug run
 ```
 This should start a server running on port 5000
 
@@ -14,3 +14,12 @@ This should start a server running on port 5000
 
 ### Endpoints
 The endpoints postman is this repo.
+
+### Docker
+
+```
+$ docker build --tag alajo .
+```
+```
+sudo docker run -d -p 5000:5000 alajo
+```
